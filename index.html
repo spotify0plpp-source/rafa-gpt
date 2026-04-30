@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAFAGPT PRO - CLOUD EDITION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        :root { --primary: #6a0dad; --primary-glow: #bc13fe; --bg-dark: #05000a; --glass: rgba(255, 255, 255, 0.03); --border: rgba(106, 13, 173, 0.3); }
+
+        body { background-color: var(--bg-dark); color: #ffffff; height: 100vh; overflow: hidden; background: radial-gradient(circle at center, #1a0033 0%, #05000a 100%); }
+
+        /* --- AUTH SECTION ANIMATION --- */
+        .auth-container { height: 100vh; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
+        .auth-card { 
+            background: rgba(15, 0, 30, 0.7); padding: 50px; border-radius: 40px; border: 1px solid var(--border); 
+            text-align: center; width: 90%; max-width: 420px; backdrop-filter: blur(25px);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+            animation: cardEntrance 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
+        }
+        @keyframes cardEntrance { from { opacity: 0; transform: translateY(50px) rotateX(10deg); } to { opacity: 1; transform: translateY(0) rotateX(0); } }
+
+        .logo-box { width: 85px; height: 85px; background: linear-gradient(135deg, var(--primary), var(--primary-glow)); border-radius: 26px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 800; box-shadow: 0 15px 35px rgba(106, 13, 173, 0.5); animation: logoPulse 3s infinite ease-in-out; }
+        @keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        h1 { font-size: 28px; font-weight: 800; margin-bottom: 30px; letter-spacing: -1px; }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group input { width: 100%; padding: 18px 25px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; color: #fff; outline: none; transition: 0.4s; font-size: 15px; }
+        .input-group input:focus { border-color: var(--primary-glow); background: rgba(106, 13, 173, 0.1); box-shadow: 0 0 20px rgba(106, 13, 173, 0.3); }
+
+        .btn-luxury { width: 100%; padding: 18px; background: linear-gradient(90deg, var(--primary), #8b5cf6); border: none; border-radius: 20px; color: white; font-weight: 800; cursor: pointer; transition: 0.4s; font-size: 16px; box-shadow: 0 10px 25px rgba(106, 13, 173, 0.4); }
+        .btn-luxury:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(106, 13, 173, 0.6); }
+
+        /* --- CHAT SECTION --- */
+        #chat-interface { display: none; height: 100vh; flex-direction: column; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        header { background: rgba(10, 0, 20, 0.9); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        #chat-display { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; gap: 20px; }
+        
+        .bubble { padding: 18px 25px; border-radius: 28px; max-width: 75%; font-size: 15px; line-height: 1.6; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .user-bubble { align-self: flex-end; background: linear-gradient(135deg, var(--primary), #4b0082); color: white; border-bottom-right-radius: 5px; }
+        .ai-bubble { align-self: flex-start; background: #150025; border: 1px solid var(--border); border-bottom-left-radius: 5px; }
+
+        .input-bar { padding: 25px 40px; background: rgba(10, 0, 20, 0.95); display: flex; gap: 15px; border-top: 1px solid var(--border); }
+        .input-bar input { flex: 1; padding: 18px 25px; background: #000; border: 1px solid var(--border); border-radius: 40px; color: #fff; outline: none; }
+        .send-btn { background: var(--primary); border: none; width: 55px; height: 55px; border-radius: 50%; color: white; cursor: pointer; transition: 0.3s; font-size: 22px; }
+        .send-btn:hover { transform: scale(1.1) rotate(10deg); }
+
+        /* --- OWNER MODULE --- */
+        #owner-panel { display: none; background: linear-gradient(90deg, #ffd700, #ffae00); color: #000; padding: 12px 40px; font-weight: 800; font-size: 12px; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container" id="auth-screen">
+        <div class="auth-card" id="login-form">
+            <div class="logo-box">R</div>
+            <h1>Login Page</h1>
+            <div class="input-group"><input type="text" id="l-user" placeholder="Username"></div>
+            <div class="input-group"><input type="password" id="l-pass" placeholder="Password"></div>
+            <button class="btn-luxury" onclick="handleLogin()">ENTER SYSTEM</button>
+            <p style="margin-top:25px; font-size:14px; color:#666;">New Member? <span onclick="toggleAuth()" style="color:var(--primary-glow); cursor:pointer; font-weight:800;">Sign Up</span></p>
+        </div>
+
+        <div class="auth-card" id="reg-form" style="display:none;">
+            <div class="logo-box">R</div>
+            <h1>Sign Up</h1>
+            <div class="input-group"><input type="text" id="r-user" placeholder="Create Username"></div>
+            <div class="input-group"><input type="password" id="r-pass" placeholder="Create Password"></div>
+            <button class="btn-luxury" onclick="handleRegister()">REGISTER NOW</button>
+            <p style="margin-top:25px; font-size:14px; color:#666;">Have Account? <span onclick="toggleAuth()" style="color:var(--primary-glow); cursor:pointer; font-weight:800;">Login</span></p>
+        </div>
+    </div>
+
+    <div id="chat-interface">
+        <header>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:10px; height:10px; background:#00ff88; border-radius:50%; box-shadow: 0 0 10px #00ff88;"></div>
+                <span style="font-weight:800; font-size: 20px; letter-spacing: 1px;">RAFAGPT <small id="badge" style="color:var(--primary-glow)">FREE</small></span>
+            </div>
+            <div style="font-weight:800; font-size:12px;">LIMIT: <span id="q-val" style="color:var(--primary-glow)">10</span></div>
+        </header>
+        <div id="owner-panel">
+            <span>👑 OWNER MODUL ACTIVE</span>
+            <button onclick="adminAction()" style="background:#000; color:#fff; border:none; padding:6px 15px; border-radius:12px; font-weight:800; cursor:pointer;">MANAGE USER</button>
+        </div>
+        <div id="chat-display"></div>
+        <div class="input-bar">
+            <input type="text" id="msg-in" placeholder="Ask something professional...">
+            <button class="send-btn" onclick="sendMsg()">🚀</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // CONFIGURASI FIREBASE RAFA TERVERIFIKASI
+        const firebaseConfig = {
+          apiKey: "AIzaSyBkBm_hp63Tc02ZkOvOU2F_TkWJjav3yO0",
+          authDomain: "rapa-e74a4.firebaseapp.com",
+          databaseURL: "https://rapa-e74a4-default-rtdb.firebaseio.com",
+          projectId: "rapa-e74a4",
+          storageBucket: "rapa-e74a4.firebasestorage.app",
+          messagingSenderId: "454832101476",
+          appId: "1:454832101476:web:f53053a88bf8f375582771",
+          measurementId: "G-YM9MKPPC5B"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let current = null;
+
+        window.toggleAuth = () => {
+            const l = document.getElementById('login-form');
+            const r = document.getElementById('reg-form');
+            l.style.display = l.style.display === "none" ? "block" : "none";
+            r.style.display = r.style.display === "none" ? "block" : "none";
+        };
+
+        window.handleRegister = async () => {
+            const u = document.getElementById('r-user').value.toLowerCase();
+            const p = document.getElementById('r-pass').value;
+            if(!u || !p) return alert("Missing fields.");
+            
+            const snap = await get(ref(db, 'users/' + u));
+            if(snap.exists()) return alert("User already exists.");
+
+            await set(ref(db, 'users/' + u), { p: p, vip: false, q: 10 });
+            alert("Success! Welcome to RAPX.");
+            toggleAuth();
+        };
+
+        window.handleLogin = async () => {
+            const u = document.getElementById('l-user').value.toLowerCase();
+            const p = document.getElementById('l-pass').value;
+
+            if(u === "rafa" && p === "rapx") {
+                current = { id: "rafa", vip: true };
+                document.getElementById('owner-panel').style.display = 'flex';
+                launch();
+                return;
+            }
+
+            const snap = await get(ref(db, 'users/' + u));
+            if(snap.exists() && snap.val().p === p) {
+                current = { id: u, ...snap.val() };
+                launch();
+            } else {
+                alert("Invalid credentials.");
+            }
+        };
+
+        function launch() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('chat-interface').style.display = 'flex';
+            updateUI();
+            addMsg('ai-bubble', "Welcome back. I am your professional AI assistant. How can I help you today?");
+        }
+
+        async function updateUI() {
+            if(current.id === "rafa") {
+                document.getElementById('q-val').innerText = "UNLIMITED";
+                document.getElementById('badge').innerText = "OWNER";
+            } else {
+                const snap = await get(ref(db, 'users/' + current.id));
+                const data = snap.val();
+                document.getElementById('q-val').innerText = data.vip ? "UNLIMITED" : data.q;
+                document.getElementById('badge').innerText = data.vip ? "PRO" : "FREE";
+            }
+        }
+
+        window.sendMsg = async () => {
+            const input = document.getElementById('msg-in');
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            if(current.id !== "rafa") {
+                const snap = await get(ref(db, 'users/' + current.id));
+                const data = snap.val();
+                if(!data.vip && data.q <= 0) return alert("Limit reached! Contact owner.");
+                if(!data.vip) await update(ref(db, 'users/' + current.id), { q: data.q - 1 });
+            }
+
+            addMsg('user-bubble', txt);
+            input.value = "";
+            updateUI();
+
+            try {
+                const res = await fetch("https://rafagpt-server.vercel.app/", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: txt })
+                });
+                const d = await res.json();
+                let clean = d.reply.includes("acode") ? "Ready to assist you with your professional tasks." : d.reply;
+                addMsg('ai-bubble', clean);
+            } catch(e) {
+                addMsg('ai-bubble', "Connection error. Re-linking to server...");
+            }
+        };
+
+        function addMsg(cls, txt) {
+            const box = document.getElementById('chat-display');
+            const div = document.createElement('div');
+            div.className = 'bubble ' + cls;
+            div.innerText = txt;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        window.adminAction = async () => {
+            const target = prompt("Target Username for PRO:");
+            if(target) {
+                const snap = await get(ref(db, 'users/' + target.toLowerCase()));
+                if(snap.exists()) {
+                    await update(ref(db, 'users/' + target.toLowerCase()), { vip: true });
+                    alert(target + " has been upgraded to PRO.");
+                    updateUI();
+                } else { alert("User not found."); }
+            }
+        };
+    </script>
+</body>
+</html>
